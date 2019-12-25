@@ -1,5 +1,6 @@
 package com.example.themoviedb
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -26,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 
         popularMovies = findViewById(R.id.popular_movies)
         popularMoviesLayoutMgr = LinearLayoutManager(
-            this, LinearLayoutManager.HORIZONTAL,
+            this, LinearLayoutManager.VERTICAL,
             false
         )
         popularMovies.layoutManager = popularMoviesLayoutMgr
@@ -45,7 +46,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onPopularMoviesFetched(movies: List<Movie>) {
-        popularMoviesAdapter.updateMovies(movies)
+        popularMoviesAdapter.appendMovies(movies)
+        viewPopularMoviesOnScrollListener()
     }
 
     private fun viewPopularMoviesOnScrollListener() {
@@ -67,4 +69,5 @@ class MainActivity : AppCompatActivity() {
     private fun  onError() {
         Toast.makeText(this, getString(R.string.error_fetch_movies), Toast.LENGTH_SHORT).show()
     }
+    
 }
