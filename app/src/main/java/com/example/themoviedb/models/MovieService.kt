@@ -12,6 +12,4 @@ interface MovieService {
         @Query("api_key") apiKey: String = "f243265c90c1b49e49a6da6d625bc9e4",
         @Query("page") page: Int
     ): Call<GetMovieResponse>
-
-
 }

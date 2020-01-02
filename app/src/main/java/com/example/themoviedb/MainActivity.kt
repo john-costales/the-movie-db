@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 
         popularMovies = findViewById(R.id.popular_movies)
         popularMoviesLayoutMgr = LinearLayoutManager(
-            this, LinearLayoutManager.VERTICAL,
+            this, LinearLayoutManager.HORIZONTAL,
             false
         )
         popularMovies.layoutManager = popularMoviesLayoutMgr
