@@ -31,10 +31,23 @@ class MainActivity : AppCompatActivity() {
             false
         )
         popularMovies.layoutManager = popularMoviesLayoutMgr
-        popularMoviesAdapter = MoviesAdapter(mutableListOf())
+        popularMoviesAdapter = MoviesAdapter(mutableListOf()) {
+            movie ->  showMovieDetails(movie)
+        }
         popularMovies.adapter = popularMoviesAdapter
 
         getPopularMovies()
+    }
+
+    private fun showMovieDetails(movie: Movie) {
+        val intent = Intent(this, MovieDetailsActivity::class.java)
+        intent.putExtra(MOVIE_BACKDROP, movie.backdropPath)
+        intent.putExtra(MOVIE_POSTER, movie.posterPath)
+        intent.putExtra(MOVIE_TITLE, movie.title)
+        intent.putExtra(MOVIE_RATING, movie.rating)
+        intent.putExtra(MOVIE_RELEASE_DATE, movie.releaseDate)
+        intent.putExtra(MOVIE_OVERVIEW, movie.overview)
+        startActivity(intent)
     }
 
     private fun getPopularMovies() {
