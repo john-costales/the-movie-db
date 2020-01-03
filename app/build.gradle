@@ -51,6 +51,4 @@ dependencies {
 
     // Card view
     implementation 'androidx.cardview:cardview:1.0.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api'
 }

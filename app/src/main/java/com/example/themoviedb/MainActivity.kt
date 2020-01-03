@@ -19,7 +19,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var popularMoviesAdapter: MoviesAdapter
     private lateinit var popularMoviesLayoutMgr: LinearLayoutManager
 
+    private lateinit var topRatedMovies: RecyclerView
+    private lateinit var topRatedMoviesAdapter: MoviesAdapter
+    private lateinit var topRatedMoviesLayoutMgr: LinearLayoutManager
+
+    private lateinit var upcomingMovies: RecyclerView
+    private lateinit var upcomingMoviesAdapter: MoviesAdapter
+    private lateinit var upcomingMoviesLayoutMgr: LinearLayoutManager
+
+    private var topRatedMoviesPage = 1
     private var popularMoviesPage = 1
+    private var upcomingMoviesPage = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +46,34 @@ class MainActivity : AppCompatActivity() {
         }
         popularMovies.adapter = popularMoviesAdapter
 
+        topRatedMovies = findViewById(R.id.top_rated_movies)
+        topRatedMoviesLayoutMgr = LinearLayoutManager(
+            this,
+            LinearLayoutManager.HORIZONTAL,
+            false
+        )
+
+        topRatedMovies.layoutManager = topRatedMoviesLayoutMgr
+        topRatedMoviesAdapter = MoviesAdapter(mutableListOf()) {
+            movie -> showMovieDetails(movie)
+        }
+        topRatedMovies.adapter = topRatedMoviesAdapter
+
+        upcomingMovies = findViewById(R.id.upcoming_movies)
+        upcomingMoviesLayoutMgr = LinearLayoutManager(
+            this,
+            LinearLayoutManager.HORIZONTAL,
+            false
+        )
+        upcomingMovies.layoutManager = upcomingMoviesLayoutMgr
+        upcomingMoviesAdapter = MoviesAdapter(mutableListOf()) {
+                movie -> showMovieDetails(movie)
+        }
+        upcomingMovies.adapter = upcomingMoviesAdapter
+
         getPopularMovies()
+        getTopRatedMovies()
+        getUpcomingMovies()
     }
 
     private fun showMovieDetails(movie: Movie) {
@@ -77,6 +114,63 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun getTopRatedMovies() {
+        Api.getTopRatedMovies(
+            topRatedMoviesPage,
+            ::onTopRatedMoviesFetched,
+            ::onError
+        )
+    }
+
+    private fun attachTopRatedMoviesOnScrollListener() {
+        topRatedMovies.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val totalItemCount = topRatedMoviesLayoutMgr.itemCount
+                val visibleItemCount = topRatedMoviesLayoutMgr.childCount
+                val firstVisibleItem = topRatedMoviesLayoutMgr.findFirstVisibleItemPosition()
+                if (firstVisibleItem + visibleItemCount >= totalItemCount / 2) {
+                    topRatedMovies.removeOnScrollListener(this)
+                    topRatedMoviesPage++
+                    getTopRatedMovies()
+                }
+            }
+        })
+    }
+
+    private fun onTopRatedMoviesFetched(movies: List<Movie>) {
+        topRatedMoviesAdapter.appendMovies(movies)
+        attachTopRatedMoviesOnScrollListener()
+    }
+
+    private fun getUpcomingMovies() {
+        Api.getUpcomingMovies(
+            upcomingMoviesPage,
+            ::onUpcomingMoviesFetched,
+            ::onError
+        )
+    }
+
+    private fun attachUpcomingMoviesOnScrollListener() {
+        upcomingMovies.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val totalItemCount = upcomingMoviesLayoutMgr.itemCount
+                val visibleItemCount = upcomingMoviesLayoutMgr.childCount
+                val firstVisibleItem = upcomingMoviesLayoutMgr.findFirstVisibleItemPosition()
+
+                if (firstVisibleItem + visibleItemCount >= totalItemCount / 2) {
+                    upcomingMovies.removeOnScrollListener(this)
+                    upcomingMoviesPage++
+                    getUpcomingMovies()
+                }
+            }
+        })
+    }
+
+    private fun onUpcomingMoviesFetched(movies: List<Movie>) {
+        upcomingMoviesAdapter.appendMovies(movies)
+        attachUpcomingMoviesOnScrollListener()
     }
 
     private fun  onError() {
